@@ -15,6 +15,6 @@ darwin)
   ;;
 esac
 
-version="v2.0.0"
+version="v2.2.0"
 url="https://github.com/latex-lsp/texlab/releases/download/$version/texlab-x86_64-$os.tar.gz"
 curl -L "$url" | tar xzv
