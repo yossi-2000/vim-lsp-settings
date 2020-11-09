@@ -12,12 +12,14 @@ augroup vim_lsp_settings_pyls_ms
       \      'properties': {
       \        'InterpreterPath': lsp_settings#get('pyls-ms', 'python-path', {key, name->exepath('python')}),
       \        'UseDefaultDatabase': v:true,
-      \        'Version': lsp_settings#get('pyls-ms', 'python-ver', {key, name->trim(matchstr(system('python -V'), '\s\zs\S\+'))}),
+      \        'Version': lsp_settings#get('pyls-ms', 'python-ver', {key, name->trim(matchstr(system(
+      \          shellescape(lsp_settings#get('pyls-ms', 'python-path', {key, name->exepath('python')})) . ' -V'
+      \        ), '\s\zs\S\+'))}),
       \      },
       \    },
       \  }),
-      \ 'whitelist': lsp_settings#get('pyls-ms', 'whitelist', ['python']),
-      \ 'blacklist': lsp_settings#get('pyls-ms', 'blacklist', []),
+      \ 'allowlist': lsp_settings#get('pyls-ms', 'allowlist', ['python']),
+      \ 'blocklist': lsp_settings#get('pyls-ms', 'blocklist', []),
       \ 'config': lsp_settings#get('pyls-ms', 'config', lsp_settings#server_config('pyls-ms')),
       \ 'workspace_config': lsp_settings#get('pyls-ms', 'workspace_config', {
       \   'python': {

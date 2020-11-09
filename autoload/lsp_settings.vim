@@ -17,10 +17,6 @@ call remove(s:settings, '$schema')
 
 let s:ftmap = {}
 
-function! lsp_settings#data_dir() abort
-  return s:data_dir
-endfunction
-
 function! lsp_settings#installer_dir() abort
   return s:installer_dir
 endfunction
@@ -31,6 +27,33 @@ function! lsp_settings#servers_dir() abort
      let l:path = substitute(l:path, '/', '\', 'g')
   endif
   return substitute(l:path, '[\/]$', '', '')
+endfunction
+
+function! lsp_settings#global_settings_dir() abort
+  let l:path = fnamemodify(get(g:, 'lsp_settings_global_settings_dir', s:data_dir), ':p')
+  if has('win32')
+     let l:path = substitute(l:path, '/', '\', 'g')
+  endif
+  return substitute(l:path, '[\/]$', '', '')
+endfunction
+
+function! lsp_settings#intalled_servers() abort
+  let l:servers = []
+  for l:ft in sort(keys(s:settings))
+    for l:conf in s:settings[l:ft]
+      let l:path = lsp_settings#servers_dir() . '/' . l:conf.command . '/' . l:conf.command
+      if !executable(l:path)
+        continue
+      endif
+      let l:path = lsp_settings#servers_dir() . '/' . l:conf.command . '/.vim-lsp-settings-version'
+      let l:version = ''
+      if filereadable(l:path)
+        let l:version = trim(join(readfile(l:path), "\n"))
+      endif
+      call add(l:servers, {'name': l:conf.command, 'version': l:version})
+    endfor
+  endfor
+  return l:servers
 endfunction
 
 function! lsp_settings#executable(cmd) abort
@@ -195,7 +218,7 @@ function! lsp_settings#root_uri(name) abort
     endfor
   endif
 
-  let l:dir = lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), extend(l:patterns, g:lsp_settings_root_markers))
+  let l:dir = lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), extend(copy(l:patterns), g:lsp_settings_root_markers))
   if empty(l:dir)
     return lsp#utils#get_default_root_uri()
   endif
@@ -297,7 +320,7 @@ function! s:vim_lsp_install_server_post(command, job, code, ...) abort
       endif
       exe 'source' l:script
       delcommand LspRegisterServer
-      doautocmd User lsp_setup
+      doautocmd <nomodeline> User lsp_setup
     endif
   endif
   call lsp_settings#utils#msg('Installed ' . a:command)
@@ -313,7 +336,7 @@ function! s:vim_lsp_install_server(ft, command, bang) abort
     call lsp_settings#utils#error('Server not found')
     return
   endif
-  if empty(a:bang) && confirm(printf('Install %s ?', l:entry[0]), "&Yes\n&Cancel") ==# 2
+  if empty(a:bang) && confirm(printf('Install %s ?', l:entry[0]), "&Yes\n&Cancel") !=# 1
     return
   endif
   let l:server_install_dir = lsp_settings#servers_dir() . '/' . l:entry[0]
@@ -338,6 +361,9 @@ endfunction
 function! s:vim_lsp_settings_suggest(ft) abort
   let l:entry = s:vim_lsp_installer(a:ft)
   if empty(l:entry)
+    return
+  endif
+  if lsp_settings#executable(l:entry[0])
     return
   endif
 
@@ -369,21 +395,13 @@ function! s:vim_lsp_suggest_plugin() abort
   endfor
 endfunction
 
-function! s:vim_lsp_load_or_suggest_delay(ft) abort
-  call s:vim_lsp_load_or_suggest(a:ft)
-  "if get(g:, 'vim_lsp_settings_filetype_no_delays', 0)
-  "  return s:vim_lsp_load_or_suggest(a:ft)
-  "endif
-  "call timer_start(0, {timer -> [s:vim_lsp_load_or_suggest(a:ft), execute('doautocmd BufReadPost')]})
-endfunction
-
 function! s:vim_lsp_load_or_suggest(ft) abort
   if (a:ft !=# '_' && &filetype !=# a:ft) || !has_key(s:settings, a:ft)
     return
   endif
 
-  if filereadable(s:data_dir . '/settings.json')
-    let l:settings = json_decode(join(readfile(s:data_dir . '/settings.json'), "\n"))
+  if filereadable(lsp_settings#global_settings_dir() . '/settings.json')
+    let l:settings = json_decode(join(readfile(lsp_settings#global_settings_dir() . '/settings.json'), "\n"))
     if  has_key(g:, 'lsp_settings')
       call extend(g:lsp_settings, l:settings)
     else
@@ -477,12 +495,12 @@ function! s:vim_lsp_load_or_suggest(ft) abort
   delcommand LspRegisterServer
 
   if l:disabled == 0 && l:found ==# 0
-    if a:ft !=# '_'
+    if a:ft !=# '_' && get(g:, 'lsp_settings_enable_suggestions', 1) == 1
       call s:vim_lsp_settings_suggest(a:ft)
     endif
   else
     if exists('#User#lsp_setup') !=# 0
-      doautocmd User lsp_setup
+      doautocmd <nomodeline> User lsp_setup
     endif
   endif
 endfunction
@@ -492,13 +510,38 @@ function! lsp_settings#clear() abort
 endfunction
 
 function! lsp_settings#init() abort
+  for [l:name, l:server] in items(get(g:, 'lsp_settings', {}))
+    if !has_key(l:server, 'allowlist')
+      continue
+    endif
+    for l:ft in l:server['allowlist']
+      if !has_key(s:settings, l:ft)
+        let s:settings[l:ft] = []
+      endif
+      let l:found = 0
+      for [l:ft2, l:configs] in items(s:settings)
+        if l:found || l:ft ==# l:ft2
+          continue
+        endif
+        for l:config in l:configs
+          if l:config.command !=# l:name
+            continue
+          endif
+          call add(s:settings[l:ft], l:config)
+          let l:found = 1
+          break
+        endfor
+      endfor
+    endfor
+  endfor
+
   for l:ft in keys(s:settings)
-    if has_key(g:, 'lsp_settings_whitelist') && index(g:lsp_settings_whitelist, l:ft) == -1 || empty(s:settings[l:ft])
+    if has_key(g:, 'lsp_settings_allowlist') && index(g:lsp_settings_allowlist, l:ft) == -1 || empty(s:settings[l:ft])
       continue
     endif
     exe 'augroup' lsp_settings#utils#group_name(l:ft)
       autocmd!
-      exe 'autocmd FileType' l:ft 'call' printf("s:vim_lsp_load_or_suggest_delay('%s')", l:ft)
+      exe 'autocmd FileType' l:ft 'call' printf("s:vim_lsp_load_or_suggest('%s')", l:ft)
     augroup END
   endfor
   augroup vim_lsp_suggest

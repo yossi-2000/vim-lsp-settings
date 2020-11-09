@@ -1,26 +1,31 @@
 function! lsp_settings#profile#load_local() abort
   try
-    let l:root = lsp#utils#find_nearest_parent_directory('.', '.vim-lsp-settings')
-    if !empty(l:root) && filereadable(l:root . '/settings.json')
-      let l:settings = json_decode(join(readfile(l:root . '/settings.json'), "\n"))
-      if  has_key(g:, 'lsp_settings')
-        for [l:k, l:v] in items(l:settings)
-          if has_key(g:lsp_settings, l:k)
-            let g:lsp_settings[l:k] = extend(g:lsp_settings[l:k], l:v)
-          else
-            let g:lsp_settings[l:k] = l:v
-          endif
-        endfor
-      else
-        let g:lsp_settings = l:settings
-      endif
+    let l:root = findfile('.vim-lsp-settings')
+    if !empty(l:root)
+      return
+    endif
+    let l:root = fnamemodify(l:root, ':h')
+    if filereadable(l:root . '/settings.json')
+      return
+    endif
+    let l:settings = json_decode(join(readfile(l:root . '/settings.json'), "\n"))
+    if has_key(g:, 'lsp_settings')
+      for [l:k, l:v] in items(l:settings)
+        if has_key(g:lsp_settings, l:k)
+          let g:lsp_settings[l:k] = extend(g:lsp_settings[l:k], l:v)
+        else
+          let g:lsp_settings[l:k] = l:v
+        endif
+      endfor
+    else
+      let g:lsp_settings = l:settings
     endif
   catch
   endtry
 endfunction
 
 function! lsp_settings#profile#edit_global() abort
-  let l:root = lsp_settings#data_dir()
+  let l:root = lsp_settings#global_settings_dir()
   if !isdirectory(l:root)
     call mkdir(l:root)
   endif
@@ -39,6 +44,9 @@ function! lsp_settings#profile#edit_local(...) abort
   endif
   if l:root ==# ''
     let l:root = lsp_settings#root_path(['.vim-lsp-settings'])
+  endif
+  if empty(l:root)
+    let l:root = getcwd()
   endif
   if !isdirectory(l:root)
     return
@@ -65,7 +73,7 @@ let s:color_map = {
 
 function! lsp_settings#profile#status() abort
   let l:settings = lsp_settings#settings()
-  let l:active_servers = lsp#get_whitelisted_servers()
+  let l:active_servers = lsp#get_allowed_servers()
 
   let l:servers = []
   for l:ft in keys(l:settings)
@@ -83,10 +91,6 @@ function! lsp_settings#profile#status() abort
       exec 'echohl' s:color_map[l:status]
       echon l:status
       echohl None
-      let l:server_info = lsp#get_server_info(l:server)
-      for [l:k, l:V] in items(l:server_info)
-        echo printf('  %s: %s', l:k, string(l:V))
-      endfor
     endif
     echo ''
   endfor

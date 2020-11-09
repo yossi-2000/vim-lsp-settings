@@ -1,8 +1,8 @@
 @echo off
 
-git clone "https://github.com/castwide/solargraph" .
+git clone --depth=1 https://github.com/castwide/solargraph .
 
-call bundle install --path vendor/bundle
+call bundle install --without development --path vendor/bundle
 
 echo @echo off ^
 

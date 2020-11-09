@@ -1,6 +1,8 @@
 @echo off
 
-curl -L -o elixir-ls.zip "https://github.com/elixir-lsp/elixir-ls/releases/download/v0.3.3/elixir-ls.zip"
+setlocal
+set VERSION=0.5.0
+curl -L -o elixir-ls.zip "https://github.com/elixir-lsp/elixir-ls/releases/download/v%VERSION%/elixir-ls.zip"
 call "%~dp0\run_unzip.cmd" elixir-ls.zip
 del elixir-ls.zip
 
