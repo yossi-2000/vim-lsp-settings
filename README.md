@@ -123,6 +123,7 @@ Because there is no way to update a server, please run `:LspInstallServer` again
 | Python           | pyls (pyls without dependencies)  | Yes       | Yes           |
 | Python           | pyls-ms (Microsoft Version)       | Yes       | Yes           |
 | Python           | jedi-language-server              | Yes       | Yes           |
+| Python           | pyright-langserver                | Yes       | Yes           |
 | R                | languageserver                    | Yes       | No            |
 | Reason           | reason-language-server            | Yes       | Yes           |
 | Ruby             | solargraph                        | Yes       | Yes           |
@@ -138,12 +139,14 @@ Because there is no way to update a server, please run `:LspInstallServer` again
 | TeX              | digestif                          | Yes       | No            |
 | Terraform        | terraform-lsp                     | Yes       | Yes           |
 | Terraform        | terraform-ls                      | Yes       | Yes           |
+| TTCN-3           | ntt                               | Yes       | Yes           |
 | TypeScript       | typescript-language-server        | Yes       | Yes           |
 | TypeScript       | rome                              | Yes       | Yes           |
 | TypeScript       | eslint-language-server            | Yes       | Yes           |
 | Vim              | vim-language-server               | Yes       | Yes           |
 | Vala             | vala-language-server              | No        | No            |
 | Vue              | vue-language-server               | Yes       | Yes           |
+| V                | vls                               | Yes       | Yes           |
 | XML              | lemminx                           | Yes       | Yes           |
 | YAML             | yaml-language-server              | Yes       | Yes           |
 | ZIG              | zls                               | No        | No            |
