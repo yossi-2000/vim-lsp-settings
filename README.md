@@ -82,6 +82,7 @@ Because there is no way to update a server, please run `:LspInstallServer` again
 | C/C++            | clangd                            | Yes       | Yes           |
 | COBOL            | cobol-language-support            | Yes       | Yes           |
 | CSS              | css-languageserver                | Yes       | Yes           |
+| CSS              | tailwindcss-intellisense          | Yes       | Yes           |
 | Clojure          | clojure-lsp                       | Yes       | Yes           |
 | Clojure          | clj-kondo-lsp                     | Yes       | Yes           |
 | Cmake            | cmake-language-server             | Yes       | Yes           |
@@ -99,6 +100,7 @@ Because there is no way to update a server, please run `:LspInstallServer` again
 | GraphQL          | gql-language-server               | Yes       | Yes           |
 | Groovy           | groovy-language-server            | Yes       | Yes           |
 | Haskell          | haskell-ide-engine                | No        | No            |
+| Haskell          | haskell-language-server           | No        | No            |
 | HTML             | html-languageserver               | Yes       | Yes           |
 | HTML             | angular-language-server           | Yes       | Yes           |
 | HTML             | tailwindcss-intellisense          | Yes       | Yes           |
@@ -124,6 +126,7 @@ Because there is no way to update a server, please run `:LspInstallServer` again
 | Python           | pyls-ms (Microsoft Version)       | Yes       | Yes           |
 | Python           | jedi-language-server              | Yes       | Yes           |
 | Python           | pyright-langserver                | Yes       | Yes           |
+| Prisma           | prisma-language-server            | Yes       | Yes           |
 | R                | languageserver                    | Yes       | No            |
 | Reason           | reason-language-server            | Yes       | Yes           |
 | Ruby             | solargraph                        | Yes       | Yes           |

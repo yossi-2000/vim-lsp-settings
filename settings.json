@@ -230,6 +230,18 @@
       ]
     }
   ],
+  "gdscript": [
+    {
+      "command": "godot",
+      "requires": []
+    }
+  ],
+  "gdscript3": [
+    {
+      "command": "godot",
+      "requires": []
+    }
+  ],
   "glsl": [
     {
       "command": "glslls",
@@ -302,6 +314,14 @@
       "requires": [
         "stack"
       ],
+      "root_uri_patterns": [
+        "stack.yaml",
+        "package.yaml"
+      ]
+    },
+    {
+      "command": "haskell-language-server",
+      "requires": [],
       "root_uri_patterns": [
         "stack.yaml",
         "package.yaml"
@@ -599,6 +619,20 @@
       "requires": [
         "luarocks"
       ]
+    }
+  ],
+  "prisma": [
+    {
+      "command": "prisma-language-server",
+      "requires": [
+        "npm"
+      ],
+      "vim_plugin": {
+        "extensions": [
+          "prisma"
+        ],
+        "name": "pantharshit00/vim-prisma"
+      }
     }
   ],
   "prolog": [
