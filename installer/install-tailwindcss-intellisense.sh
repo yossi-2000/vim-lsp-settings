@@ -2,7 +2,7 @@
 
 set -e
 
-version="0.4.1"
+version="0.5.10"
 url="https://github.com/tailwindlabs/tailwindcss-intellisense/releases/download/v$version/vscode-tailwindcss-$version.vsix"
 asset="vscode-tailwindcss.vsix"
 
@@ -17,7 +17,7 @@ cat <<EOF >tailwindcss-intellisense
 #!/usr/bin/env bash
 
 DIR=\$(cd \$(dirname \$0); pwd)
-node \$DIR/extension/dist/server/index.js --stdio \$*
+node \$DIR/extension/dist/server/index.js \$*
 EOF
 
 chmod +x tailwindcss-intellisense

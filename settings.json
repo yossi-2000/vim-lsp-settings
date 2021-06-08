@@ -283,7 +283,46 @@
       ]
     }
   ],
+  "gomod": [
+    {
+      "command": "gopls",
+      "requires": [
+        "go"
+      ],
+      "root_uri_patterns": [
+        "go.mod"
+      ],
+      "vim_plugin": {
+        "extensions": [
+          "mod"
+        ],
+        "name": "mattn/vim-gomod"
+      }
+    }
+  ],
   "graphql": [
+    {
+      "command": "graphql-language-server",
+      "requires": [
+        "npm"
+      ],
+      "root_uri_patterns": [
+        ".graphqlrc",
+        ".graphqlrc.json",
+        ".graphqlrc.yml",
+        ".graphqlrc.yaml",
+        ".graphql.config.js",
+        ".graphqlrc.js",
+        "package.json",
+        "tsconfig.json"
+      ],
+      "vim_plugin": {
+        "extensions": [
+          "graphql"
+        ],
+        "name": "jparise/vim-graphql"
+      }
+    },
     {
       "command": "gql-language-server",
       "requires": [
@@ -413,9 +452,23 @@
       ]
     },
     {
+      "command": "deno",
+      "requires": []
+    },
+    {
       "command": "rslint-lsp",
       "requires": [
         "cargo"
+      ]
+    },
+    {
+      "command": "flow",
+      "requires": [
+        "npm"
+      ],
+      "root_uri_patterns": [
+        "package.json",
+        ".flowconfig"
       ]
     }
   ],
@@ -448,6 +501,20 @@
       "command": "rome",
       "requires": [
         "npm"
+      ]
+    },
+    {
+      "command": "deno",
+      "requires": []
+    },
+    {
+      "command": "flow",
+      "requires": [
+        "npm"
+      ],
+      "root_uri_patterns": [
+        "package.json",
+        ".flowconfig"
       ]
     }
   ],
@@ -607,6 +674,19 @@
       "requires": [
         "npm"
       ]
+    },
+    {
+      "command": "psalm-language-server",
+      "config": {
+        "refresh_pattern": "\\(\\$[a-zA-Z0-9_:]*\\|\\k\\+\\)$"
+      },
+      "requires": [
+        "composer"
+      ],
+      "root_uri_patterns": [
+        "psalm.xml",
+        "psalm.xml.dist"
+      ]
     }
   ],
   "plaintex": [
@@ -661,6 +741,30 @@
     }
   ],
   "python": [
+    {
+      "command": "pylsp-all",
+      "requires": [
+        "py"
+      ]
+    },
+    {
+      "command": "pylsp-all",
+      "requires": [
+        "python3"
+      ]
+    },
+    {
+      "command": "pylsp",
+      "requires": [
+        "py"
+      ]
+    },
+    {
+      "command": "pylsp",
+      "requires": [
+        "python3"
+      ]
+    },
     {
       "command": "pyls-all",
       "requires": [
@@ -718,6 +822,14 @@
       ]
     }
   ],
+  "racket": [
+    {
+      "command": "racket-lsp",
+      "requires": [
+          "raco"
+      ]
+    }
+  ],
   "reason": [
     {
       "command": "reason-language-server",
@@ -734,9 +846,26 @@
       }
     }
   ],
+  "rst": [
+    {
+      "command": "esbonio",
+      "requires": [
+        "python"
+      ],
+      "root_uri_patterns": [
+        "conf.py"
+      ]
+    }
+  ],
   "ruby": [
     {
       "command": "solargraph",
+      "requires": [
+        "gem"
+      ]
+    },
+    {
+      "command": "ruby_language_server",
       "requires": [
         "gem"
       ]
@@ -935,6 +1064,10 @@
       "requires": [
         "npm"
       ]
+    },
+    {
+      "command": "deno",
+      "requires": []
     }
   ],
   "typescriptreact": [
@@ -963,6 +1096,10 @@
       "requires": [
         "npm"
       ]
+    },
+    {
+      "command": "deno",
+      "requires": []
     }
   ],
   "vala": [
@@ -983,6 +1120,9 @@
       "requires": [
         "npm"
       ],
+      "config": {
+        "refresh_pattern": "\\([bwtglsav]:\\)\\?\\k*$"
+      },
       "root_uri_patterns": [
         ".vim/",
         "vimfiles/"

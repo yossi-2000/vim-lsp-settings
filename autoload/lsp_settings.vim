@@ -37,7 +37,7 @@ function! lsp_settings#global_settings_dir() abort
   return substitute(l:path, '[\/]$', '', '')
 endfunction
 
-function! lsp_settings#intalled_servers() abort
+function! lsp_settings#installed_servers() abort
   let l:servers = []
   for l:ft in sort(keys(s:settings))
     for l:conf in s:settings[l:ft]
@@ -83,16 +83,16 @@ function! s:vim_lsp_installer(ft, ...) abort
   if !has_key(s:settings, l:ft)
     return []
   endif
-  let l:server = s:settings[l:ft]
-  if empty(l:server)
+  let l:servers = s:settings[l:ft]
+  if empty(l:servers)
     return []
   endif
   if l:ft !=# '_'
-    let l:server += s:settings['_']
+    let l:servers += s:settings['_']
   endif
 
   let l:name = get(a:000, 0, '')
-  for l:conf in l:server
+  for l:conf in l:servers
     if !empty(l:name) && l:conf.command != l:name
       continue
     endif
@@ -188,10 +188,11 @@ function! lsp_settings#exec_path(cmd) abort
   if type(l:paths) == type([])
     let l:paths = join(l:paths, ',') . ','
   endif
-  let l:paths .= lsp_settings#servers_dir() . '/' . a:cmd
   if !has('win32')
+    let l:paths .= lsp_settings#servers_dir() . '/' . a:cmd
     return lsp_settings#utils#first_one(globpath(l:paths, a:cmd, 1))
   endif
+  let l:paths .= lsp_settings#servers_dir() . '\' . a:cmd
   for l:ext in ['.exe', '.cmd', '.bat']
     let l:path = globpath(l:paths, a:cmd . l:ext, 1)
     if !empty(l:path)
@@ -298,6 +299,9 @@ function! s:vim_lsp_uninstall_server(command) abort
   endif
   call lsp_settings#utils#msg('Uninstalling ' . a:command)
   let l:server_install_dir = lsp_settings#servers_dir() . '/' . a:command
+  if has('win32')
+     let l:server_install_dir = substitute(l:server_install_dir, '/', '\', 'g')
+  endif
   if !isdirectory(l:server_install_dir)
     call lsp_settings#utils#error('Server not found')
     return
@@ -345,6 +349,9 @@ function! s:vim_lsp_install_server(ft, command, bang) abort
     return
   endif
   let l:server_install_dir = lsp_settings#servers_dir() . '/' . l:entry[0]
+  if has('win32')
+    let l:server_install_dir = substitute(l:server_install_dir, '/', '\', 'g')
+  endif
   if isdirectory(l:server_install_dir)
     call lsp_settings#utils#msg('Uninstalling ' . l:entry[0])
     call delete(l:server_install_dir, 'rf')
@@ -353,9 +360,13 @@ function! s:vim_lsp_install_server(ft, command, bang) abort
   call lsp_settings#utils#msg('Installing ' . l:entry[0])
   if has('nvim')
     split new
-    call termopen(l:entry[1], {'cwd': l:server_install_dir, 'on_exit': function('s:vim_lsp_install_server_post', [l:entry[0]])}) | startinsert
+    call termopen(shellescape(l:entry[1]), {'cwd': l:server_install_dir, 'on_exit': function('s:vim_lsp_install_server_post', [l:entry[0]])}) | startinsert
   else
-    let l:bufnr = term_start(l:entry[1], {'cwd': l:server_install_dir})
+    if has('win32')
+      let l:bufnr = term_start(shellescape(l:entry[1]), {'cwd': l:server_install_dir})
+    else
+      let l:bufnr = term_start(l:entry[1], {'cwd': l:server_install_dir})
+    endif
     let l:job = term_getjob(l:bufnr)
     if l:job != v:null
       call job_setoptions(l:job, {'exit_cb': function('s:vim_lsp_install_server_post', [l:entry[0]])})
